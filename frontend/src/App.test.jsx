@@ -62,17 +62,19 @@ describe('App', () => {
     it('renders "query" input box, "+" button and "-" button', () => {
         render(<App />)
 
-        expect(screen.getByPlaceholderText('query')).toBeInTheDocument()
         expect(screen.getByText('+')).toBeInTheDocument()
+        expect(screen.getByPlaceholderText('query')).toBeInTheDocument()
+        expect(screen.getByPlaceholderText('column')).toBeInTheDocument()
         expect(screen.getByText('-')).toBeInTheDocument()
     })
 
-    it('click "+" button then increase "query" input box, "+" button and "-" button', () => {
+    it('click "+" button then increase "query" input box, "column" input box, "+" button and "-" button', () => {
         render(<App />)
         const plusButton = screen.getByText('+')
         userEvent.click(plusButton)
 
         expect(screen.getAllByPlaceholderText('query')).toHaveLength(2)
+        expect(screen.getAllByPlaceholderText('column')).toHaveLength(2)
         expect(screen.getAllByText('-')).toHaveLength(2)
     })
 
@@ -82,6 +84,22 @@ describe('App', () => {
         userEvent.click(minusButton)
 
         expect(screen.queryAllByPlaceholderText('query')).toHaveLength(0)
+        expect(screen.queryAllByPlaceholderText('column')).toHaveLength(0)
         expect(screen.queryAllByText('-')).toHaveLength(0)
+    })
+
+    it('renders typed text in query and column input box', async () => {
+        render(<App />)
+
+        const queryBox = screen.getByPlaceholderText('query')
+        const columnBox = screen.getByPlaceholderText('column')
+
+        userEvent.type(queryBox, 'text into query box')
+        userEvent.type(columnBox, 'text into column box')
+
+        await waitFor(() => {
+            expect(queryBox).toHaveValue('text into query box')
+            expect(columnBox).toBeInTheDocument('text into column box')
+        })
     })
 })

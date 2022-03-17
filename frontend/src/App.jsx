@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 const debounce = (fn, timeout = 500) => {
     let timer = null
@@ -16,6 +16,7 @@ const debounce = (fn, timeout = 500) => {
 
 function App() {
     const [queryBoxes, setQueryBoxes] = useState([{ query: '', column: '' }])
+    const [expectedValues, setExpectedValues] = useState([])
 
     const urlChangeHandler = debounce(({ target }) => {
         const requestBody = {
@@ -38,14 +39,71 @@ function App() {
         setQueryBoxes([...queryBoxes])
     }
 
-    const queryHandler = (index, { target }) => {
-        queryBoxes[index].query = target.value
-        setQueryBoxes([...queryBoxes])
+    const mapToInnerHTMLList = (nodeList) => {
+        const array = []
+        for (let index = 0; index < nodeList.length; index++) {
+            array.push(nodeList[index].innerHTML)
+        }
+        return array
     }
+
+    const debouncedSelector = useCallback(
+        debounce((query) => {
+            if (!query) {
+                return
+            }
+            const nodeList = document.querySelector('#responseBody').querySelectorAll(query)
+            setExpectedValues([...expectedValues, mapToInnerHTMLList(nodeList)])
+        }),
+        []
+    )
+
+    const queryHandler = (index, { target }) => {
+        // 안 되던 케이스
+        // const array = [...queryBoxes]
+        // array[index] = { query: target.value, ...queryBoxes[index] }
+        // array[index].query = target.value
+        // console.log('========== array ==========>', array)
+        // console.log('========== array[index] ==========>', array[index])
+        // console.log('========== target value ==========>', target.value)
+        // setQueryBoxes(array)
+
+        // 되지만 좋지 않은 케이스
+        queryBoxes[index].query = target.value
+        console.log('========== queryBoxes ==========>', queryBoxes)
+        console.log('========== queryBoxes[index] ==========>', queryBoxes[index])
+        setQueryBoxes([...queryBoxes])
+
+        // 되지만 좋지 않은 케이스
+        // queryBoxes[index] = { ...queryBoxes[index], query: target.value }
+        // console.log('========== queryBoxes ==========>', queryBoxes)
+        // console.log('========== queryBoxes[index] ==D========>', queryBoxes[index])
+        // console.log('========== target value ==========>', target.value)
+        // setQueryBoxes([...queryBoxes])
+
+        // 되는 케이스
+        // const array = [...queryBoxes]
+        // array[index] = { ...array[index], query: target.value }
+        // console.log('========== array ==========>', array)
+        // console.log('========== array[index] ==========>', array[index])
+        // console.log('========== target value ==========>', target.value)
+        // setQueryBoxes(array)
+
+        debouncedSelector(target.value)
+    }
+
+    console.log('====================== render ======================')
 
     const columnHandler = (index, { target }) => {
         queryBoxes[index].column = target.value
         setQueryBoxes([...queryBoxes])
+    }
+
+    const printArray = (array) => {
+        if (!array) {
+            return
+        }
+        return '[' + array.join(', ') + ']'
     }
 
     return (
@@ -69,6 +127,7 @@ function App() {
                             onChange={(event) => columnHandler(index, event)}
                         />
                         <a onClick={() => decreaseHandler(index)}>-</a>
+                        <div>{printArray(expectedValues[index])}</div>
                     </div>
                 )
             })}

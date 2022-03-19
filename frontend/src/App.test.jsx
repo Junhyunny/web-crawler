@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import App from './App'
 import userEvent from '@testing-library/user-event'
 import axios from 'axios'
@@ -106,12 +106,11 @@ describe('App', () => {
         userEvent.type(screen.getByPlaceholderText('put url what you want to crawl'), 'http://localhost:3000')
         jest.advanceTimersByTime(500)
 
-        await waitFor(() => {
-            console.log('---------------------- wait for -----------------------')
-            userEvent.type(screen.getByPlaceholderText('query'), '.data')
+        userEvent.type(await screen.findByPlaceholderText('query'), '.data')
+        await act(() => {
+            jest.advanceTimersByTime(500)
+            return Promise.resolve()
         })
-
-        // userEvent.type(await screen.findByPlaceholderText('query'), '.data')
 
         await waitFor(() => {
             expect(screen.getByText('[First, Second]')).toBeInTheDocument()

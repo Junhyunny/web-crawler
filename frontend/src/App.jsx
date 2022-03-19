@@ -59,40 +59,11 @@ function App() {
     )
 
     const queryHandler = (index, { target }) => {
-        // 안 되던 케이스
-        // const array = [...queryBoxes]
-        // array[index] = { query: target.value, ...queryBoxes[index] }
-        // array[index].query = target.value
-        // console.log('========== array ==========>', array)
-        // console.log('========== array[index] ==========>', array[index])
-        // console.log('========== target value ==========>', target.value)
-        // setQueryBoxes(array)
-
-        // 되지만 좋지 않은 케이스
-        queryBoxes[index].query = target.value
-        console.log('========== queryBoxes ==========>', queryBoxes)
-        console.log('========== queryBoxes[index] ==========>', queryBoxes[index])
-        setQueryBoxes([...queryBoxes])
-
-        // 되지만 좋지 않은 케이스
-        // queryBoxes[index] = { ...queryBoxes[index], query: target.value }
-        // console.log('========== queryBoxes ==========>', queryBoxes)
-        // console.log('========== queryBoxes[index] ==D========>', queryBoxes[index])
-        // console.log('========== target value ==========>', target.value)
-        // setQueryBoxes([...queryBoxes])
-
-        // 되는 케이스
-        // const array = [...queryBoxes]
-        // array[index] = { ...array[index], query: target.value }
-        // console.log('========== array ==========>', array)
-        // console.log('========== array[index] ==========>', array[index])
-        // console.log('========== target value ==========>', target.value)
-        // setQueryBoxes(array)
-
+        const array = [...queryBoxes]
+        array[index] = { ...array[index], query: target.value }
+        setQueryBoxes(array)
         debouncedSelector(target.value)
     }
-
-    console.log('====================== render ======================')
 
     const columnHandler = (index, { target }) => {
         queryBoxes[index].column = target.value

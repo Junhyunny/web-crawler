@@ -23,10 +23,8 @@ function App() {
             url: target.value,
         }
         axios.post('/api/html-document', requestBody).then(({ data }) => {
-            const element = document.createElement('html')
             const responseBody = document.querySelector('#responseBody')
-            element.innerHTML = data
-            responseBody.innerHTML = element.querySelector('body').innerHTML
+            responseBody.innerHTML = data
         })
     })
 

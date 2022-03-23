@@ -1,6 +1,6 @@
 import TargetPage from './TargetPage'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, waitFor } from '@testing-library/react'
+import * as ExtractQueryUtil from '../utils/ExtractQueryUtil'
 
 describe('TargetPage', () => {
     it('renders props children', () => {
@@ -9,42 +9,18 @@ describe('TargetPage', () => {
         expect(screen.getByText('hello world'))
     })
 
-    it('set queries when click child component', () => {
-        const setExtractedQuery = jest.fn()
-        const target = `
-            <div class='parent'>
-                <div class='parent__child hello'>hello world</div>
-            </div>
-        `
+    it('call extractQueryFrom function of util', async () => {
+        const spyExtractQueryFrom = jest.spyOn(ExtractQueryUtil, 'extractQueryFrom')
 
-        render(<TargetPage target={target}></TargetPage>)
+        render(<TargetPage />)
 
-        let query = ''
-        const elements = document.querySelectorAll('div')
-        elements.forEach((element) =>
-            element.addEventListener(
-                'click',
-                (event) => {
-                    if (query !== '') {
-                        query += ' '
-                    }
-                    query += event.currentTarget.tagName
-                    let classes = event.currentTarget.classList
-                    for (let index = 0; index < classes.length; index++) {
-                        query += `.${classes[index]}`
-                    }
-                    setExtractedQuery(query)
-                },
-                { capture: true }
-            )
-        )
+        await waitFor(() => {
+            expect(spyExtractQueryFrom).toHaveBeenNthCalledWith(1, 'div')
+            expect(spyExtractQueryFrom).toHaveBeenNthCalledWith(2, 'a')
+        })
+    })
 
-        userEvent.click(screen.getByText('hello world'))
-
-        expect(setExtractedQuery).toHaveBeenCalledTimes(4)
-        expect(setExtractedQuery).toHaveBeenNthCalledWith(1, 'DIV')
-        expect(setExtractedQuery).toHaveBeenNthCalledWith(2, 'DIV DIV')
-        expect(setExtractedQuery).toHaveBeenNthCalledWith(3, 'DIV DIV DIV.parent')
-        expect(setExtractedQuery).toHaveBeenNthCalledWith(4, 'DIV DIV DIV.parent DIV.parent__child.hello')
+    it('dispatch extracted queries', () => {
+        render(<TargetPage />)
     })
 })

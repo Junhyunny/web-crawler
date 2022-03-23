@@ -1,12 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState = {}
+const initialState = {
+    queries: {},
+}
 
 export const extractedQuerySlice = createSlice({
     name: 'extractedQueries',
     initialState,
     reducers: {
-        updateExtractedQuery: (state, action) => {},
+        updateExtractedQuery: (state, action) => {
+            state.queries = action.payload
+        },
     },
 })
 

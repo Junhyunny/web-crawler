@@ -29,9 +29,9 @@ describe('TargetPage', () => {
         renderWithProvider(<TargetPage />)
 
         await waitFor(() => {
-            expect(spyExtractQueryEventFrom).toHaveBeenNthCalledWith(1, 'div')
+            expect(spyExtractQueryEventFrom).toHaveBeenNthCalledWith(1, 'target', 'div', ['target'])
         })
-        expect(spyExtractQueryEventFrom).toHaveBeenNthCalledWith(2, 'a')
+        expect(spyExtractQueryEventFrom).toHaveBeenNthCalledWith(2, 'target', 'a', ['target'])
     })
 
     it('dispatch extracted queries', async () => {

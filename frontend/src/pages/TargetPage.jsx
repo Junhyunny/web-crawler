@@ -14,8 +14,8 @@ const TargetPage = ({ target = `<></>` }) => {
     useEffect(() => {
         const element = document.querySelector('#target')
         element.innerHTML = target
-        addExtractQueryEventFrom('div')
-        addExtractQueryEventFrom('a')
+        addExtractQueryEventFrom('target', 'div', ['target'])
+        addExtractQueryEventFrom('target', 'a', ['target'])
     }, [])
 
     return <div id="target" onClick={extractQueryHandler}></div>

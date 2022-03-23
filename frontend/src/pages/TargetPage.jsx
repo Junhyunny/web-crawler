@@ -1,23 +1,24 @@
 import { useEffect } from 'react'
-import { extractQueryFrom } from '../utils/ExtractQueryUtil'
+import { addExtractQueryEventFrom, extractQuery } from '../utils/ExtractQueryUtil'
 import { updateExtractedQuery } from '../store/extractedQuerySlice'
 import { useDispatch } from 'react-redux'
 
 const TargetPage = ({ target = `<></>` }) => {
     const dispatch = useDispatch()
 
+    const extractQueryHandler = () => {
+        const extractedQuery = extractQuery()
+        dispatch(updateExtractedQuery(extractedQuery))
+    }
+
     useEffect(() => {
         const element = document.querySelector('#target')
         element.innerHTML = target
-        dispatch(
-            updateExtractedQuery({
-                queryFromDiv: extractQueryFrom('div'),
-                queryFromA: extractQueryFrom('a'),
-            })
-        )
+        addExtractQueryEventFrom('div')
+        addExtractQueryEventFrom('a')
     }, [])
 
-    return <div id="target"></div>
+    return <div id="target" onClick={extractQueryHandler}></div>
 }
 
 export default TargetPage

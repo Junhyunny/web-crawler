@@ -1,15 +1,16 @@
 import TargetPage from './TargetPage'
-import { render, screen, waitFor } from '@testing-library/react'
+import { queryByAttribute, render, screen, waitFor } from '@testing-library/react'
 
 import * as ExtractQueryUtil from '../utils/ExtractQueryUtil'
 import * as ExtractedQueryStore from '../store/extractedQuerySlice'
 
 import { Provider } from 'react-redux'
 import { store } from '../store'
+import userEvent from '@testing-library/user-event'
 
 describe('TargetPage', () => {
     const renderWithProvider = (target = `<></>`) => {
-        render(
+        return render(
             <Provider store={store}>
                 <TargetPage target={target} />
             </Provider>
@@ -23,29 +24,27 @@ describe('TargetPage', () => {
     })
 
     it('call extractQueryFrom function of util', async () => {
-        const spyExtractQueryFrom = jest.spyOn(ExtractQueryUtil, 'extractQueryFrom')
+        const spyExtractQueryEventFrom = jest.spyOn(ExtractQueryUtil, 'addExtractQueryEventFrom')
 
         renderWithProvider(<TargetPage />)
 
         await waitFor(() => {
-            expect(spyExtractQueryFrom).toHaveBeenNthCalledWith(1, 'div')
+            expect(spyExtractQueryEventFrom).toHaveBeenNthCalledWith(1, 'div')
         })
-        expect(spyExtractQueryFrom).toHaveBeenNthCalledWith(2, 'a')
+        expect(spyExtractQueryEventFrom).toHaveBeenNthCalledWith(2, 'a')
     })
 
     it('dispatch extracted queries', async () => {
-        jest.spyOn(ExtractQueryUtil, 'extractQueryFrom').mockReturnValueOnce('DIV.hello')
-        jest.spyOn(ExtractQueryUtil, 'extractQueryFrom').mockReturnValueOnce('A.world')
+        jest.spyOn(ExtractQueryUtil, 'extractQuery').mockReturnValueOnce('DIV.hello')
         const spyUpdateExtractedQuery = jest.spyOn(ExtractedQueryStore, 'updateExtractedQuery')
+        const getById = queryByAttribute.bind(null, 'id')
+        const dom = renderWithProvider(`<div class="hello"><a class="world">hello world</a></div>`)
 
-        renderWithProvider(`<div class="hello"><a class="world">hello world</a></div>`)
+        userEvent.click(getById(dom.container, 'target'))
 
         await waitFor(() => {
             expect(spyUpdateExtractedQuery).toHaveBeenCalledTimes(1)
         })
-        expect(spyUpdateExtractedQuery).toHaveBeenCalledWith({
-            queryFromDiv: 'DIV.hello',
-            queryFromA: 'A.world',
-        })
+        expect(spyUpdateExtractedQuery).toHaveBeenCalledWith('DIV.hello')
     })
 })

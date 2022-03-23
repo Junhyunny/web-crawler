@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    queries: {},
+    queries: [],
 }
 
 export const extractedQuerySlice = createSlice({
@@ -9,7 +9,7 @@ export const extractedQuerySlice = createSlice({
     initialState,
     reducers: {
         updateExtractedQuery: (state, action) => {
-            state.queries = action.payload
+            state.queries.push(action.payload)
         },
     },
 })

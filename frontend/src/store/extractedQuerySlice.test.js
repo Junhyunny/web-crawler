@@ -3,25 +3,16 @@ import reducer, { updateExtractedQuery } from './extractedQuerySlice'
 describe('extractedQuerySlice', () => {
     it('should return the initial state', () => {
         expect(reducer(undefined, {})).toEqual({
-            queries: {},
+            queries: [],
         })
     })
 
     it('should return the updated queries', () => {
-        const prevState = {}
-        expect(
-            reducer(
-                prevState,
-                updateExtractedQuery({
-                    queryFromDiv: 'queryFromDiv',
-                    queryFromA: 'queryFromA',
-                })
-            )
-        ).toEqual({
-            queries: {
-                queryFromDiv: 'queryFromDiv',
-                queryFromA: 'queryFromA',
-            },
+        const prevState = {
+            queries: ['initial query'],
+        }
+        expect(reducer(prevState, updateExtractedQuery('queryFromDiv'))).toEqual({
+            queries: ['initial query', 'queryFromDiv'],
         })
     })
 })
